@@ -95,7 +95,8 @@ export default function DashboardPage() {
   async function createCase(e: React.FormEvent) {
     e.preventDefault()
     const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('cases').insert({ name: newCaseName, unit: newCaseUnit || null, created_by: user!.id })
+    const { error } = await supabase.from('cases').insert({ name: newCaseName, unit: newCaseUnit || null, created_by: user!.id })
+    if (error) { alert('新增案件失敗：' + error.message); return }
     setNewCaseName(''); setNewCaseUnit(''); setShowNewCase(false)
     loadData()
   }
@@ -103,7 +104,7 @@ export default function DashboardPage() {
   async function createTask(e: React.FormEvent) {
     e.preventDefault()
     const { data: { user } } = await supabase.auth.getUser()
-    await supabase.from('tasks').insert({
+    const { error } = await supabase.from('tasks').insert({
       title: newTaskTitle,
       case_id: newTaskCaseId || null,
       due_date: newTaskDue || null,
@@ -111,6 +112,7 @@ export default function DashboardPage() {
       assigned_to: newTaskAssignee || null,
       created_by: user!.id,
     })
+    if (error) { alert('新增任務失敗：' + error.message); return }
     setNewTaskTitle(''); setNewTaskCaseId(''); setNewTaskDue(''); setNewTaskPriority('normal')
     setNewTaskAssignee(''); setShowNewTask(false)
     loadData()
